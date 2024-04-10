@@ -1,0 +1,66 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraMove : MonoBehaviour
+{
+    [Header("Movement")]
+    [SerializeField]
+    private Transform target;
+    private Vector3 cameraOffset;
+
+    [Header("Zoom")]
+    [SerializeField]
+    private float zoomSpeed = 1.0f;
+    private float minZoom = 2.0f;
+    private float maxZoom = 10.0f;
+
+    [Header("Orbit")]
+    [SerializeField]
+    private float orbitSpeed = 1.0f;
+    private float mouseX;
+    private float mouseY;
+
+    public float smoothSpeed = 0.125f;
+
+
+    private void Start()
+    {
+        this.cameraOffset = this.transform.position - this.target.position;
+    }
+
+    private void Update()
+    {
+        AddZoom();
+        AddOrbit();
+    }
+
+    private void AddZoom()
+    {
+        float scroll = Input.GetAxisRaw("Mouse ScrollWheel");
+        float zoomAmount = scroll * this.zoomSpeed;
+        float newDistance = Mathf.Clamp(this.cameraOffset.magnitude + zoomAmount, minZoom, maxZoom);
+        this.cameraOffset = this.cameraOffset.normalized * newDistance;
+    }
+
+    private void AddOrbit()
+    {
+
+    }
+
+    private void LateUpdate()
+    {
+        this.mouseX += Input.GetAxisRaw("Mouse X") * this.orbitSpeed;
+        this.mouseY -= Input.GetAxisRaw("Mouse Y") * this.orbitSpeed;
+        this.mouseY = Mathf.Clamp(this.mouseY, -35, 60);
+
+        Quaternion rotation = Quaternion.Euler(mouseY, mouseX, 0);
+        Vector3 rotatedOffset = rotation * this.cameraOffset;
+
+        Vector3 newPosition = target.position + rotatedOffset;
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, newPosition, this.smoothSpeed); 
+        transform.position = smoothedPosition;
+
+        transform.LookAt(target);
+    }
+}

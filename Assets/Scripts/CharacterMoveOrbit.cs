@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterMove : MonoBehaviour
+public class CharacterMoveOrbit : MonoBehaviour
 {
     private CharacterController characterController;
 
@@ -50,6 +50,14 @@ public class CharacterMove : MonoBehaviour
         this.AddMove();
         this.AddRun();
 
+        // Rotate player
+        if (this.moveDirection.x != 0f && this.moveDirection.z != 0f)
+        {
+            Vector3 rotateDirection = new Vector3(this.moveDirection.x, 0f, this.moveDirection.z);
+            Quaternion newRotation = Quaternion.LookRotation(rotateDirection);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, 1000f * Time.deltaTime);
+        }
+
         // Move player
         this.characterController.Move(this.moveDirection * Time.deltaTime);
 
@@ -87,7 +95,7 @@ public class CharacterMove : MonoBehaviour
     {
         var moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 newDirection = this.transform.forward * 1;
+        Vector3 newDirection = Camera.main.transform.forward;
         this.moveDirection.x = newDirection.x * moveZ;
         this.moveDirection.z = newDirection.z * moveZ;
     }
