@@ -2,7 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterMove : MonoBehaviour
+public class CharacterMoveAnim : MonoBehaviour
 {
     private CharacterController characterController;
 
@@ -35,11 +35,13 @@ public class CharacterMove : MonoBehaviour
 
     private Vector3 moveDirection;
     private float floorDistanceFromFoot = 0f;
+    private Animator animator;
 
     void Start()
     {
         this.characterController = GetComponent<CharacterController>();
         this.floorDistanceFromFoot = this.characterController.stepOffset + this.characterController.skinWidth + this.characterController.height / 2;
+        this.animator = this.GetComponent<Animator>();
     }
     
     void Update()
@@ -52,6 +54,8 @@ public class CharacterMove : MonoBehaviour
 
         // Move player
         this.characterController.Move(this.moveDirection * Time.deltaTime);
+
+        
 
         // Update UI
         this.UpdateUI();
@@ -96,9 +100,7 @@ public class CharacterMove : MonoBehaviour
     {
         if (this.energySystem && this.energySliderUI != null)
         {
-            if (Input.GetButton("Fire1") && 
-                (this.characterEnergy > 0.2f || this.isRunning) && 
-                (this.moveDirection.x != 0 || this.moveDirection.z != 0))
+            if (Input.GetButton("Fire1") && (this.characterEnergy > 0.2f || this.isRunning) && this.moveDirection.x != 0 && this.moveDirection.z != 0)
             {
                 this.isRunning = true;
                 isRunning = true;
@@ -133,7 +135,7 @@ public class CharacterMove : MonoBehaviour
     {
         if (characterController.isGrounded)
             return true;
-
+             
         RaycastHit hit;
         if (Physics.Raycast(transform.position, Vector3.down, out hit, this.floorDistanceFromFoot))
             return true;

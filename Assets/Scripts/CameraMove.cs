@@ -20,8 +20,8 @@ public class CameraMove : MonoBehaviour
     private float orbitSpeed = 1.0f;
     private float mouseX;
     private float mouseY;
-
-    public float smoothSpeed = 0.125f;
+    [SerializeField]
+    private float smoothSpeed = 0.125f;
 
 
     private void Start()
@@ -33,6 +33,7 @@ public class CameraMove : MonoBehaviour
     {
         AddZoom();
         AddOrbit();
+        AddOrbitKeyboard();
     }
 
     private void AddZoom()
@@ -43,18 +44,21 @@ public class CameraMove : MonoBehaviour
         this.cameraOffset = this.cameraOffset.normalized * newDistance;
     }
 
-    private void AddOrbit()
+    private void AddOrbitKeyboard()
     {
-
+        this.mouseX += Input.GetAxisRaw("Horizontal") * this.orbitSpeed;
     }
 
-    private void LateUpdate()
+    private void AddOrbit()
     {
         this.mouseX += Input.GetAxisRaw("Mouse X") * this.orbitSpeed;
         this.mouseY -= Input.GetAxisRaw("Mouse Y") * this.orbitSpeed;
         this.mouseY = Mathf.Clamp(this.mouseY, -35, 60);
+    }
 
-        Quaternion rotation = Quaternion.Euler(mouseY, mouseX, 0);
+    private void LateUpdate()
+    {
+        Quaternion rotation = Quaternion.Euler(this.mouseY, this.mouseX, 0);
         Vector3 rotatedOffset = rotation * this.cameraOffset;
 
         Vector3 newPosition = target.position + rotatedOffset;

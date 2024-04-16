@@ -2,6 +2,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class CharacterMoveOrbit : MonoBehaviour
 {
     private CharacterController characterController;
@@ -46,7 +47,6 @@ public class CharacterMoveOrbit : MonoBehaviour
     {
         this.AddGravity();
         this.AddJump();
-        this.AddRotate();
         this.AddMove();
         this.AddRun();
 
@@ -85,19 +85,14 @@ public class CharacterMoveOrbit : MonoBehaviour
         }
     }
 
-    private void AddRotate()
-    {
-        var moveX = Input.GetAxisRaw("Horizontal");
-        this.transform.Rotate(Vector3.up, moveX * this.rotationSensivity);
-    }
-
     private void AddMove()
     {
         var moveZ = Input.GetAxisRaw("Vertical");
 
         Vector3 newDirection = Camera.main.transform.forward;
-        this.moveDirection.x = newDirection.x * moveZ;
-        this.moveDirection.z = newDirection.z * moveZ;
+        Vector3 newDirectionXZ = new Vector3(newDirection.x, 0f, newDirection.z).normalized;
+        this.moveDirection.x = newDirectionXZ.x * moveZ;
+        this.moveDirection.z = newDirectionXZ.z * moveZ;
     }
 
     private void AddRun()
@@ -145,5 +140,14 @@ public class CharacterMoveOrbit : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red; 
+        Gizmos.DrawRay(this.transform.position, this.transform.forward * 2f);
+
+        Gizmos.color = Color.green;
+        Gizmos.DrawRay(this.transform.position, Vector3.Cross(this.transform.forward, Vector3.up) * 2f);
     }
 }
