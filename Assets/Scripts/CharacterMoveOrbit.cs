@@ -12,6 +12,7 @@ public class CharacterMoveOrbit : MonoBehaviour
     private float walkMultiplier;
     [SerializeField]
     private float runMultiplier;
+    private float moveMultiplier;
     [SerializeField]
     private float rotationSensivity;
     [SerializeField]
@@ -49,11 +50,12 @@ public class CharacterMoveOrbit : MonoBehaviour
     {
         this.AddGravity();
         this.AddJump();
+        this.AddRun();
         this.AddMove();
         this.AddLateralMove();
         this.AddRotation();
-        this.AddRun();
 
+        //this.AddSpeed(); // <- Aplicamos el multiplier a nuestro normalized direction
         // Rotate player (Obsolete)
         //if (this.moveDirection.x != 0f && this.moveDirection.z != 0f)
         //{
@@ -97,10 +99,9 @@ public class CharacterMoveOrbit : MonoBehaviour
     {
         var moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 newDirection = this.transform.forward;
-        Vector3 newDirectionXZ = new Vector3(newDirection.x, 0f, newDirection.z).normalized;
-        this.moveDirection.x = newDirectionXZ.x * moveZ;
-        this.moveDirection.z = newDirectionXZ.z * moveZ;
+        Vector3 newDirection = this.transform.forward * this.moveMultiplier;
+        this.moveDirection.x = newDirection.x * moveZ;
+        this.moveDirection.z = newDirection.z * moveZ;
     }
 
     private void AddRotation()
@@ -117,8 +118,8 @@ public class CharacterMoveOrbit : MonoBehaviour
         {
             Vector3 newDirectionPerpendicular = Vector3.Cross(this.transform.forward, Vector3.up);
             Vector3 newDirectionXZ = new Vector3(newDirectionPerpendicular.x, 0f, newDirectionPerpendicular.z).normalized;
-            var moveDirectionX = newDirectionXZ.x * -moveX;
-            var moveDirectionZ = newDirectionXZ.z * -moveX;
+            var moveDirectionX = newDirectionXZ.x * -moveX * this.moveMultiplier * 0.7f;
+            var moveDirectionZ = newDirectionXZ.z * -moveX * this.moveMultiplier * 0.7f;
 
             this.moveDirection.x += moveDirectionX;
             this.moveDirection.z += moveDirectionZ;
@@ -146,13 +147,11 @@ public class CharacterMoveOrbit : MonoBehaviour
             }
         }
 
-        var moveMultiplier = this.walkMultiplier;
+        this.moveMultiplier = this.walkMultiplier;
         if (this.isRunning)
         {
-            moveMultiplier = this.runMultiplier;
+            this.moveMultiplier = this.runMultiplier;
         }
-
-        this.moveDirection = new Vector3(this.moveDirection.x * moveMultiplier, this.moveDirection.y, this.moveDirection.z * moveMultiplier);
     }
 
     private void UpdateUI()

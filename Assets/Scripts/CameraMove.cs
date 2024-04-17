@@ -64,8 +64,8 @@ public class CameraMove : MonoBehaviour
         Vector3 rotatedOffset = rotation * this.cameraOffset;
 
         Vector3 newPosition = target.position + rotatedOffset;
-        Vector3 smoothedPosition = Vector3.Lerp(transform.position, newPosition, this.smoothSpeed); 
-        transform.position = smoothedPosition;
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, newPosition, 1f); 
+        transform.position = newPosition;
 
         transform.LookAt(target);
     }
