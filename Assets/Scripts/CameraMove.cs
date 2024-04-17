@@ -53,14 +53,14 @@ public class CameraMove : MonoBehaviour
 
     private void AddOrbit()
     {
-        //this.mouseX += Input.GetAxisRaw("Mouse X") * this.orbitSpeed;
+        this.mouseX += Input.GetAxisRaw("Mouse X") * this.orbitSpeed;
         this.mouseY -= Input.GetAxisRaw("Mouse Y") * this.orbitSpeed;
         this.mouseY = Mathf.Clamp(this.mouseY, -35, 60);
     }
 
     private void LateUpdate()
     {
-        Quaternion rotation = Quaternion.Euler(this.mouseY, this.target.transform.forward.x, 0);
+        Quaternion rotation = Quaternion.Euler(this.mouseY, this.mouseX, 0);
         Vector3 rotatedOffset = rotation * this.cameraOffset;
 
         Vector3 newPosition = target.position + rotatedOffset;

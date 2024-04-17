@@ -97,7 +97,7 @@ public class CharacterMoveOrbit : MonoBehaviour
     {
         var moveZ = Input.GetAxisRaw("Vertical");
 
-        Vector3 newDirection = Camera.main.transform.forward;
+        Vector3 newDirection = this.transform.forward;
         Vector3 newDirectionXZ = new Vector3(newDirection.x, 0f, newDirection.z).normalized;
         this.moveDirection.x = newDirectionXZ.x * moveZ;
         this.moveDirection.z = newDirectionXZ.z * moveZ;
@@ -105,7 +105,8 @@ public class CharacterMoveOrbit : MonoBehaviour
 
     private void AddRotation()
     {
-        this.mouseX = Input.GetAxisRaw("Mouse X");
+        if (Input.GetMouseButton(1) == false)
+            this.mouseX = Input.GetAxisRaw("Mouse X");
     }
 
     private void AddLateralMove()
@@ -178,8 +179,5 @@ public class CharacterMoveOrbit : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawRay(this.transform.position, Vector3.Cross(this.transform.forward, Vector3.up) * 2f);
-
-        Gizmos.color = Color.blue;
-        Gizmos.DrawRay(this.transform.position, Camera.main.transform.forward * 2f);
     }
 }
