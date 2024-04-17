@@ -36,6 +36,8 @@ public class CharacterMoveOrbit : MonoBehaviour
 
     private Vector3 moveDirection;
     private float floorDistanceFromFoot = 0f;
+    private float mouseX;
+    private float orbitSpeed;
 
     void Start()
     {
@@ -48,15 +50,21 @@ public class CharacterMoveOrbit : MonoBehaviour
         this.AddGravity();
         this.AddJump();
         this.AddMove();
+        this.AddLateralMove();
+        this.AddRotation();
         this.AddRun();
 
-        // Rotate player
-        if (this.moveDirection.x != 0f && this.moveDirection.z != 0f)
-        {
-            Vector3 rotateDirection = new Vector3(this.moveDirection.x, 0f, this.moveDirection.z);
-            Quaternion newRotation = Quaternion.LookRotation(rotateDirection);
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, 1000f * Time.deltaTime);
-        }
+        // Rotate player (Obsolete)
+        //if (this.moveDirection.x != 0f && this.moveDirection.z != 0f)
+        //{
+        //    Vector3 rotateDirection = new Vector3(this.moveDirection.x, 0f, this.moveDirection.z);
+        //    Quaternion newRotation = Quaternion.LookRotation(rotateDirection);
+        //    transform.rotation = Quaternion.RotateTowards(transform.rotation, newRotation, 1000f * Time.deltaTime);
+        //}
+
+
+        this.transform.Rotate(Vector3.up, this.mouseX);
+
 
         // Move player
         this.characterController.Move(this.moveDirection * Time.deltaTime);
@@ -93,6 +101,27 @@ public class CharacterMoveOrbit : MonoBehaviour
         Vector3 newDirectionXZ = new Vector3(newDirection.x, 0f, newDirection.z).normalized;
         this.moveDirection.x = newDirectionXZ.x * moveZ;
         this.moveDirection.z = newDirectionXZ.z * moveZ;
+    }
+
+    private void AddRotation()
+    {
+        this.mouseX = Input.GetAxisRaw("Mouse X");
+    }
+
+    private void AddLateralMove()
+    {
+        var moveX = Input.GetAxisRaw("Horizontal");
+
+        if (moveX != 0)
+        {
+            Vector3 newDirectionPerpendicular = Vector3.Cross(this.transform.forward, Vector3.up);
+            Vector3 newDirectionXZ = new Vector3(newDirectionPerpendicular.x, 0f, newDirectionPerpendicular.z).normalized;
+            var moveDirectionX = newDirectionXZ.x * -moveX;
+            var moveDirectionZ = newDirectionXZ.z * -moveX;
+
+            this.moveDirection.x += moveDirectionX;
+            this.moveDirection.z += moveDirectionZ;
+        }
     }
 
     private void AddRun()
@@ -149,5 +178,8 @@ public class CharacterMoveOrbit : MonoBehaviour
 
         Gizmos.color = Color.green;
         Gizmos.DrawRay(this.transform.position, Vector3.Cross(this.transform.forward, Vector3.up) * 2f);
+
+        Gizmos.color = Color.blue;
+        Gizmos.DrawRay(this.transform.position, Camera.main.transform.forward * 2f);
     }
 }
